@@ -2,348 +2,244 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NOVO. — Générateur de Devis</title>
 <style>
-:root {
-  --accent: #A78BFA;
-  --accent-dark: #7C3AED;
-  --black: #111;
-  --dark: #1A1A1A;
-  --card: #242424;
-  --input-bg: #2E2E2E;
-  --border: #383838;
-  --mid: #777;
-  --light: #AAA;
-  --bg: #F0F0F0;
-  --white: #FFF;
-  --success: #10B981;
-  --danger: #EF4444;
-  --radius: 8px;
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--accent:#A78BFA;--dark:#1A1A1A;--card:#242424;--inp:#2E2E2E;--brd:#383838;--white:#fff}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#111;color:#fff;min-height:100vh}
+
+/* TABS */
+.tabs{display:flex;background:var(--dark);border-bottom:2px solid var(--accent);position:sticky;top:0;z-index:999}
+.tabs button{flex:1;padding:13px;background:none;border:none;color:#666;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit}
+.tabs button.active{color:var(--accent)}
+
+/* LAYOUT */
+.app{display:flex;height:calc(100vh - 47px)}
+
+/* SIDEBAR */
+.sidebar{width:320px;min-width:320px;background:var(--dark);display:flex;flex-direction:column;height:100%}
+.sidebar-scroll{flex:1;overflow-y:auto;padding:20px 16px 8px}
+.sidebar-scroll::-webkit-scrollbar{width:3px}
+.sidebar-scroll::-webkit-scrollbar-thumb{background:#444;border-radius:2px}
+.actions{padding:12px 16px 16px;border-top:1px solid #2a2a2a}
+
+.logo{font-size:20px;font-weight:900;letter-spacing:3px;color:var(--accent)}
+.logo-sub{font-size:10px;color:#555;text-transform:uppercase;letter-spacing:1px;margin-top:2px;margin-bottom:18px}
+
+.sec{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);padding:14px 0 8px;border-top:1px solid #2a2a2a;margin-top:4px}
+.sec.first{border-top:none;margin-top:0;padding-top:0}
+
+.field{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+.field label{font-size:11px;color:#888;font-weight:500}
+.field input,.field select,.field textarea{background:var(--inp);border:1px solid var(--brd);border-radius:6px;color:#fff;font-size:14px;padding:10px 12px;outline:none;font-family:inherit;width:100%;-webkit-appearance:none;transition:border-color .15s}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent)}
+.field textarea{resize:vertical;min-height:60px}
+.field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='%23888' d='M5 6L0 0h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+/* TVA */
+.tva-toggle{display:flex;align-items:center;justify-content:space-between;background:var(--inp);border:1px solid var(--brd);border-radius:6px;padding:12px;margin-bottom:8px;cursor:pointer;user-select:none}
+.tva-toggle span{font-size:13px;color:#ccc}
+.pill{width:40px;height:22px;background:#444;border-radius:11px;position:relative;transition:background .2s;flex-shrink:0}
+.pill.on{background:var(--accent)}
+.pill::after{content:'';position:absolute;width:18px;height:18px;background:#fff;border-radius:50%;top:2px;left:2px;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.pill.on::after{left:20px}
+.tva-rates{display:none;gap:6px;margin-bottom:10px}
+.tva-rates.show{display:flex}
+.tva-btn{flex:1;padding:9px;border-radius:6px;border:1px solid var(--brd);background:var(--inp);color:#aaa;font-size:13px;font-weight:700;cursor:pointer;text-align:center;transition:all .15s;font-family:inherit}
+.tva-btn.on{background:var(--accent);border-color:var(--accent);color:#fff}
+
+/* PRESTS */
+.prest{background:var(--card);border:1px solid var(--brd);border-radius:8px;padding:12px;margin-bottom:8px}
+.prest-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.prest-num{font-size:10px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1px}
+.btn-x{background:none;border:none;color:#555;font-size:22px;cursor:pointer;line-height:1;padding:0 4px;font-family:inherit}
+.btn-x:active{color:#ef4444}
+.prest input,.prest select{background:var(--inp);border:1px solid var(--brd);border-radius:5px;color:#fff;font-size:13px;padding:8px 10px;width:100%;outline:none;font-family:inherit;-webkit-appearance:none;transition:border-color .15s}
+.prest input:focus,.prest select:focus{border-color:var(--accent)}
+.prest input{margin-bottom:8px}
+.prest-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.prest-row input{margin-bottom:0}
+.prest select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='%23888' d='M5 6L0 0h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
+
+.btn-add{background:none;border:1px dashed #3a3a3a;border-radius:6px;color:#666;font-size:13px;padding:10px;cursor:pointer;width:100%;text-align:center;margin-top:4px;font-family:inherit;transition:all .15s}
+.btn-add:active{border-color:var(--accent);color:var(--accent)}
+
+/* CONDS */
+.cond{display:flex;gap:8px;align-items:flex-start;margin-bottom:6px}
+.cond textarea{flex:1;background:var(--inp);border:1px solid var(--brd);border-radius:6px;color:#fff;font-size:12px;padding:8px 10px;outline:none;resize:vertical;min-height:44px;font-family:inherit;transition:border-color .15s}
+.cond textarea:focus{border-color:var(--accent)}
+
+.btn-print{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;width:100%;margin-bottom:8px;font-family:inherit;transition:background .2s}
+.btn-print:active{background:#7c3aed}
+.btn-reset{background:none;color:#555;border:1px solid #2a2a2a;border-radius:8px;padding:10px;font-size:12px;cursor:pointer;width:100%;font-family:inherit}
+.btn-reset:active{color:#aaa;border-color:#555}
+
+/* PREVIEW PANEL */
+.preview{flex:1;background:#dcdcdc;overflow-y:auto;display:flex;flex-direction:column;align-items:center;padding:20px 12px}
+.preview-lbl{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#999;margin-bottom:12px}
+
+/* A4 */
+.a4{width:794px;background:#fff;box-shadow:0 4px 32px rgba(0,0,0,.2);padding:44px 50px;display:flex;flex-direction:column;min-height:1123px;color:#222;font-size:11px;font-family:'Segoe UI',system-ui,sans-serif}
+.a4-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}
+.a4-logo{background:#111;padding:9px 16px;display:flex;align-items:center;min-height:40px}
+.a4-logo span{color:#fff;font-size:16px;font-weight:900;letter-spacing:3px}
+.a4-hinfo{text-align:right}
+.a4-hname{font-size:12px;font-weight:700;color:#111}
+.a4-hsub{font-size:9px;color:#888;line-height:1.7;margin-top:2px}
+.a4-sep{height:3px;background:#A78BFA;margin-bottom:14px}
+.a4-title-row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+.a4-title{font-size:32px;font-weight:900;letter-spacing:-1px;line-height:1;color:#111}
+.a4-num{font-size:10px;color:#999;margin-top:3px}
+.a4-meta{text-align:right}
+.a4-meta div{font-size:9.5px;color:#666;margin-bottom:2px}
+.a4-meta div strong{color:#333}
+.a4-badge{display:inline-block;margin-top:4px;padding:2px 8px;border-radius:3px;font-size:9px;font-weight:700;background:#F3F0FF;color:#7C3AED}
+.a4-parties{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:12px}
+.a4-plbl{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#A78BFA;margin-bottom:3px}
+.a4-pname{font-size:11px;font-weight:700;color:#111;margin-bottom:2px}
+.a4-pinfo{font-size:9px;color:#666;line-height:1.7}
+.a4-proj{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;padding:9px 11px;background:#F8F7FF;border-left:3px solid #A78BFA}
+.a4-proj label{font-size:7.5px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#999;display:block;margin-bottom:2px}
+.a4-proj span{font-size:10px;color:#333;font-weight:500}
+.a4-stitle{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#111;margin-bottom:6px}
+.a4-table{width:100%;border-collapse:collapse}
+.a4-table thead tr{background:#111}
+.a4-table thead th{color:#fff;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:7px 9px;text-align:left}
+.a4-table thead th:nth-child(2){text-align:center;width:70px}
+.a4-table thead th:nth-child(3){text-align:right;width:95px}
+.a4-table tbody tr{border-bottom:1px solid #f0f0f0}
+.a4-table tbody tr:nth-child(even){background:#fafafa}
+.a4-table tbody td{padding:6px 9px;font-size:9.5px;color:#333}
+.a4-table tbody td:nth-child(2){text-align:center;color:#888;font-size:9px}
+.a4-table tbody td:nth-child(3){text-align:right;font-weight:500}
+.r-sub td{padding:7px 9px;background:#F5F3FF;font-size:10px;font-weight:600;color:#444}
+.r-sub td:last-child{text-align:right}
+.r-tva td{padding:5px 9px;background:#FAF9FF;font-size:9.5px;color:#7C3AED}
+.r-tva td:last-child{text-align:right}
+.r-tot td{padding:8px 9px;background:#111;font-size:11px;font-weight:800;color:#fff}
+.r-tot td:last-child{text-align:right}
+.r-ac td{padding:6px 9px;background:#f5f5f5;font-size:10px;font-weight:600;color:#555}
+.r-ac td:last-child{text-align:right}
+.r-sol td{padding:7px 9px;background:#A78BFA;font-size:10.5px;font-weight:700;color:#fff}
+.r-sol td:last-child{text-align:right}
+.a4-conds{margin-top:11px}
+.a4-cond{display:flex;gap:6px;margin-bottom:3px}
+.a4-cnum{color:#A78BFA;font-weight:800;font-size:9px;flex-shrink:0}
+.a4-ctxt{font-size:9px;color:#555;line-height:1.5}
+.a4-sigs{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:14px}
+.a4-stitle2{font-size:9.5px;font-weight:700;color:#111;margin-bottom:7px}
+.a4-sline{border-bottom:1px solid #ddd;height:20px;margin-bottom:4px}
+.a4-slbl{font-size:8px;color:#bbb}
+.a4-footer{margin-top:auto;padding-top:12px;border-top:1px solid #eee;text-align:center;font-size:8px;color:#ccc}
+
+/* MOBILE */
+@media(max-width:860px){
+  .app{flex-direction:column;height:auto}
+  .sidebar{width:100%;min-width:unset;height:auto;max-height:none}
+  .sidebar.hide{display:none}
+  .preview{padding:0}
+  .preview.hide{display:none}
+  .preview-lbl{display:none}
+  .a4{width:100%;min-height:unset;box-shadow:none;padding:20px 16px;font-size:9.5px}
+  .a4-title{font-size:24px}
+  .a4-logo span{font-size:13px}
+  .a4-parties{grid-template-columns:1fr;gap:8px}
+  .a4-proj{grid-template-columns:1fr}
+  .a4-sigs{grid-template-columns:1fr;gap:10px}
+  .a4-table thead th{font-size:7px;padding:5px 6px}
+  .a4-table tbody td{padding:5px 6px;font-size:8.5px}
+  .r-sub td,.r-tva td,.r-tot td,.r-ac td,.r-sol td{padding:5px 6px;font-size:9px!important}
 }
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { font-size: 16px; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--black); min-height: 100vh; }
-
-/* ── MOBILE TABS ── */
-.mobile-tabs {
-  display: none;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: var(--dark);
-  border-bottom: 2px solid var(--accent);
-}
-.mobile-tabs button {
-  flex: 1;
-  padding: 14px 8px;
-  background: none;
-  border: none;
-  color: #888;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: color 0.2s;
-}
-.mobile-tabs button.active { color: var(--accent); }
-
-/* ── DESKTOP LAYOUT ── */
-.app { display: flex; height: 100vh; overflow: hidden; }
-
-/* ── SIDEBAR ── */
-.sidebar {
-  width: 340px;
-  min-width: 340px;
-  background: var(--dark);
-  color: var(--white);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-.sidebar-inner {
-  flex: 1;
-  overflow-y: auto;
-  padding: 20px 16px 32px;
-  -webkit-overflow-scrolling: touch;
-}
-.sidebar-inner::-webkit-scrollbar { width: 4px; }
-.sidebar-inner::-webkit-scrollbar-track { background: transparent; }
-.sidebar-inner::-webkit-scrollbar-thumb { background: #444; border-radius: 2px; }
-
-.sidebar-logo { font-size: 20px; font-weight: 900; letter-spacing: 3px; color: var(--accent); }
-.sidebar-sub { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; margin-bottom: 20px; }
-
-.section-label {
-  font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
-  color: var(--accent); padding: 16px 0 8px;
-  border-top: 1px solid #333; margin-top: 4px;
-}
-.section-label:first-of-type { border-top: none; margin-top: 0; padding-top: 0; }
-
-.field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
-.field label { font-size: 11px; color: #888; font-weight: 500; }
-.field input, .field select, .field textarea {
-  background: var(--input-bg);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  color: var(--white);
-  font-size: 14px;
-  padding: 10px 12px;
-  outline: none;
-  transition: border-color 0.2s;
-  font-family: inherit;
-  width: 100%;
-  -webkit-appearance: none;
-}
-.field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent); }
-.field textarea { resize: vertical; min-height: 64px; }
-.field select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23888' d='M6 8L0 0h12z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
-.field select option { background: #2A2A2A; }
-
-.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-
-/* Toggle TVA */
-.tva-toggle {
-  display: flex; align-items: center; justify-content: space-between;
-  background: var(--input-bg); border: 1px solid var(--border);
-  border-radius: 6px; padding: 12px; margin-bottom: 8px; cursor: pointer;
-  user-select: none; -webkit-tap-highlight-color: transparent;
-}
-.tva-toggle span { font-size: 13px; color: #ccc; }
-.toggle-pill { width: 40px; height: 22px; background: #444; border-radius: 11px; position: relative; transition: background 0.25s; flex-shrink: 0; }
-.toggle-pill.on { background: var(--accent); }
-.toggle-pill::after { content: ''; position: absolute; width: 18px; height: 18px; background: white; border-radius: 50%; top: 2px; left: 2px; transition: left 0.25s; box-shadow: 0 1px 3px rgba(0,0,0,.3); }
-.toggle-pill.on::after { left: 20px; }
-
-.tva-rates { display: none; gap: 6px; margin-bottom: 10px; }
-.tva-rates.visible { display: flex; }
-.tva-btn { flex: 1; padding: 9px 4px; border-radius: 6px; border: 1px solid var(--border); background: var(--input-bg); color: #aaa; font-size: 13px; font-weight: 700; cursor: pointer; text-align: center; transition: all 0.15s; -webkit-tap-highlight-color: transparent; }
-.tva-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
-
-/* Prestations */
-.prest-item { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; margin-bottom: 8px; }
-.prest-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-.prest-num { font-size: 10px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
-.btn-remove { background: none; border: none; color: #555; cursor: pointer; font-size: 20px; line-height: 1; padding: 2px 4px; transition: color 0.15s; -webkit-tap-highlight-color: transparent; }
-.btn-remove:hover, .btn-remove:active { color: var(--danger); }
-
-.prest-input { background: var(--input-bg); border: 1px solid var(--border); border-radius: 5px; color: white; font-size: 13px; padding: 8px 10px; width: 100%; margin-bottom: 8px; outline: none; font-family: inherit; -webkit-appearance: none; }
-.prest-input:focus { border-color: var(--accent); }
-.prest-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.prest-select { background: var(--input-bg); border: 1px solid var(--border); border-radius: 5px; color: white; font-size: 13px; padding: 8px 10px; width: 100%; outline: none; font-family: inherit; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath fill='%23888' d='M5 7L0 0h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px; }
-
-.btn-add { background: none; border: 1px dashed #444; border-radius: 6px; color: #777; font-size: 13px; padding: 10px; cursor: pointer; width: 100%; transition: all 0.15s; text-align: center; margin-top: 4px; -webkit-tap-highlight-color: transparent; font-family: inherit; }
-.btn-add:hover, .btn-add:active { border-color: var(--accent); color: var(--accent); }
-
-/* Conditions */
-.cond-item { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 6px; }
-.cond-ta { background: var(--input-bg); border: 1px solid var(--border); border-radius: 6px; color: white; font-size: 12px; padding: 8px 10px; flex: 1; outline: none; resize: vertical; min-height: 44px; font-family: inherit; -webkit-appearance: none; }
-.cond-ta:focus { border-color: var(--accent); }
-
-/* Sidebar actions */
-.sidebar-actions { padding: 12px 16px 16px; background: var(--dark); border-top: 1px solid #2A2A2A; }
-.btn-print { background: var(--accent); color: white; border: none; border-radius: 8px; padding: 14px; font-size: 15px; font-weight: 700; cursor: pointer; width: 100%; transition: background 0.2s; font-family: inherit; -webkit-tap-highlight-color: transparent; }
-.btn-print:hover, .btn-print:active { background: var(--accent-dark); }
-.btn-reset { margin-top: 8px; background: none; color: #555; border: 1px solid #333; border-radius: 8px; padding: 10px; font-size: 12px; cursor: pointer; width: 100%; transition: all 0.2s; font-family: inherit; -webkit-tap-highlight-color: transparent; }
-.btn-reset:hover, .btn-reset:active { color: #aaa; border-color: #555; }
-
-/* ── PREVIEW ── */
-.preview-wrap { flex: 1; overflow-y: auto; background: #DCDCDC; display: flex; flex-direction: column; align-items: center; padding: 24px 16px; }
-.preview-label { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #999; margin-bottom: 14px; }
-
-/* ── A4 ── */
-.a4 {
-  width: 794px; background: white;
-  box-shadow: 0 4px 32px rgba(0,0,0,.18);
-  padding: 44px 50px;
-  display: flex; flex-direction: column;
-  font-family: 'Segoe UI', system-ui, sans-serif;
-  color: #222; font-size: 11px;
-  min-height: 1123px;
-}
-
-.a4-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 18px; }
-.a4-logobox { background: #111; padding: 10px 18px; display: flex; align-items: center; justify-content: center; min-height: 44px; }
-.a4-logotext { color: white; font-size: 17px; font-weight: 900; letter-spacing: 3px; }
-.a4-hinfo { text-align: right; }
-.a4-hname { font-size: 12px; font-weight: 700; }
-.a4-hsub { font-size: 9.5px; color: #888; line-height: 1.7; margin-top: 2px; }
-
-.a4-sep { height: 3px; background: var(--accent); margin-bottom: 16px; }
-
-.a4-title-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
-.a4-title { font-size: 34px; font-weight: 900; letter-spacing: -1px; line-height: 1; }
-.a4-num { font-size: 10px; color: #999; margin-top: 3px; }
-.a4-meta { text-align: right; }
-.a4-meta-line { font-size: 10px; color: #666; margin-bottom: 2px; }
-.a4-meta-line strong { color: #333; }
-.a4-badge { display: inline-block; margin-top: 5px; padding: 3px 8px; border-radius: 4px; font-size: 9.5px; font-weight: 700; background: #F3F0FF; color: #7C3AED; }
-
-.a4-parties { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 14px; }
-.a4-plabel { font-size: 8.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 4px; }
-.a4-pname { font-size: 11.5px; font-weight: 700; color: #111; margin-bottom: 2px; }
-.a4-pinfo { font-size: 9.5px; color: #666; line-height: 1.7; }
-
-.a4-projet { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; padding: 10px 12px; background: #F8F7FF; border-left: 3px solid var(--accent); }
-.a4-pitem label { font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #999; display: block; margin-bottom: 2px; }
-.a4-pitem span { font-size: 10.5px; color: #333; font-weight: 500; }
-
-.a4-stitle { font-size: 8.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #111; margin-bottom: 7px; }
-
-.a4-table { width: 100%; border-collapse: collapse; }
-.a4-table thead tr { background: #111; }
-.a4-table thead th { color: white; font-size: 8.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 8px 10px; text-align: left; }
-.a4-table thead th:nth-child(2) { text-align: center; width: 75px; }
-.a4-table thead th:nth-child(3) { text-align: right; width: 100px; }
-.a4-table tbody tr { border-bottom: 1px solid #F0F0F0; }
-.a4-table tbody tr:nth-child(even) { background: #FAFAFA; }
-.a4-table tbody td { padding: 7px 10px; font-size: 10px; color: #333; }
-.a4-table tbody td:nth-child(2) { text-align: center; color: #888; font-size: 9.5px; }
-.a4-table tbody td:nth-child(3) { text-align: right; font-weight: 500; }
-.a4-table tfoot .row-sub td { padding: 7px 10px; background: #F5F3FF; font-size: 10.5px; font-weight: 600; color: #444; }
-.a4-table tfoot .row-sub td:last-child { text-align: right; }
-.a4-table tfoot .row-tva td { padding: 6px 10px; background: #FAF9FF; font-size: 10px; color: #7C3AED; }
-.a4-table tfoot .row-tva td:last-child { text-align: right; }
-.a4-table tfoot .row-total td { padding: 9px 10px; background: #111; font-size: 12px; font-weight: 800; color: white; }
-.a4-table tfoot .row-total td:last-child { text-align: right; }
-.a4-table tfoot .row-acompte td { padding: 6px 10px; background: #F5F5F5; font-size: 10.5px; font-weight: 600; color: #555; }
-.a4-table tfoot .row-acompte td:last-child { text-align: right; }
-.a4-table tfoot .row-solde td { padding: 8px 10px; background: var(--accent); font-size: 11px; font-weight: 700; color: white; }
-.a4-table tfoot .row-solde td:last-child { text-align: right; }
-
-.a4-conds { margin-top: 12px; }
-.a4-cond { display: flex; gap: 7px; margin-bottom: 4px; }
-.a4-cnum { color: var(--accent); font-weight: 800; font-size: 9.5px; flex-shrink: 0; }
-.a4-ctxt { font-size: 9.5px; color: #555; line-height: 1.5; }
-
-.a4-sigs { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 16px; }
-.a4-sig-title { font-size: 10px; font-weight: 700; color: #111; margin-bottom: 8px; }
-.a4-sig-line { border-bottom: 1px solid #DDD; height: 22px; margin-bottom: 5px; }
-.a4-sig-lbl { font-size: 8.5px; color: #BBB; }
-
-.a4-footer { margin-top: auto; padding-top: 14px; border-top: 1px solid #EEE; text-align: center; font-size: 8.5px; color: #CCC; }
-
-/* ── RESPONSIVE ── */
-@media (max-width: 900px) {
-  .mobile-tabs { display: flex; }
-  .app { flex-direction: column; height: auto; overflow: visible; }
-  .sidebar { width: 100%; min-width: unset; }
-  .sidebar.hidden { display: none; }
-  .preview-wrap { padding: 16px 0; }
-  .preview-wrap.hidden { display: none; }
-  .preview-label { display: none; }
-
-  .a4 {
-    width: 100%;
-    min-height: unset;
-    box-shadow: none;
-    padding: 20px 16px;
-    font-size: 9px;
-  }
-  .a4-logotext { font-size: 13px; }
-  .a4-title { font-size: 24px; }
-  .a4-table thead th { font-size: 7px; padding: 6px 6px; }
-  .a4-table tbody td { padding: 5px 6px; font-size: 8.5px; }
-  .a4-table tfoot td { padding: 5px 6px !important; font-size: 9px !important; }
-  .a4-parties { gap: 10px; }
-  .a4-sigs { gap: 12px; }
-}
-
-@media (max-width: 480px) {
-  .a4 { padding: 14px 12px; }
-  .a4-logobox { padding: 7px 12px; min-height: 34px; }
-  .a4-logotext { font-size: 11px; }
-  .a4-title { font-size: 20px; }
-  .a4-parties { grid-template-columns: 1fr; gap: 8px; margin-bottom: 10px; }
-  .a4-projet { grid-template-columns: 1fr; }
-  .a4-table thead th:nth-child(2) { display: none; }
-  .a4-table tbody td:nth-child(2) { display: none; }
-  .a4-sigs { grid-template-columns: 1fr; gap: 10px; }
-}
-
-/* ── PRINT ── */
-@media print {
-  body, html { background: white; }
-  .mobile-tabs, .sidebar, .preview-label, .preview-wrap > :not(.a4) { display: none !important; }
-  .app, .preview-wrap { display: block; height: auto; overflow: visible; padding: 0; background: white; }
-  .sidebar.hidden, .preview-wrap.hidden { display: block !important; }
-  .a4 { width: 100%; box-shadow: none; padding: 12mm 14mm; min-height: unset; font-size: 11px; }
-  .a4-title { font-size: 34px; }
-  .a4-logotext { font-size: 17px; }
-  .a4-table thead th { font-size: 8.5px; }
-  .a4-table tbody td { font-size: 10px; }
-  @page { size: A4; margin: 0; }
+/* PRINT */
+@media print{
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body{background:#fff}
+  .tabs,.sidebar,.preview-lbl{display:none!important}
+  .app,.preview{display:block!important;height:auto;overflow:visible;padding:0;background:#fff}
+  .preview.hide{display:block!important}
+  .a4{width:100%;min-height:unset;box-shadow:none;padding:12mm 14mm;font-size:11px}
+  .a4-title{font-size:32px}
+  .a4-logo span{font-size:16px}
+  .a4-table thead th{font-size:8px}
+  .a4-table tbody td{font-size:9.5px}
+  @page{size:A4;margin:0}
 }
 </style>
 </head>
 <body>
 
-<div class="mobile-tabs">
+<div class="tabs">
   <button class="active" onclick="showTab('form')">✏️ Formulaire</button>
   <button onclick="showTab('preview')">👁 Aperçu</button>
 </div>
 
 <div class="app">
-  <!-- ═══ SIDEBAR ═══ -->
-  <aside class="sidebar" id="tab-form">
-    <div class="sidebar-inner">
-      <div class="sidebar-logo">NOVO.</div>
-      <div class="sidebar-sub">Générateur de devis</div>
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="panel-form">
+    <div class="sidebar-scroll">
+      <div class="logo">NOVO.</div>
+      <div class="logo-sub">Générateur de devis</div>
 
-      <div class="section-label">Mon entreprise</div>
-      <div class="field"><label>Nom</label><input id="s_nom" value="NOVO." oninput="update()"></div>
-      <div class="field"><label>Adresse</label><input id="s_adresse" value="Renens, Vaud — Suisse" oninput="update()"></div>
-      <div class="field"><label>Email</label><input id="s_email" value="info@novodesign.ch" oninput="update()"></div>
-      <div class="field"><label>Téléphone</label><input id="s_tel" value="076 586 25 38" oninput="update()"></div>
-      <div class="field"><label>Site web</label><input id="s_web" value="novodesign.ch" oninput="update()"></div>
-
-      <div class="section-label">Devis</div>
+      <div class="sec first">Mon entreprise</div>
+      <div class="field"><label>Nom</label><input id="s_nom" value="NOVO." oninput="render()"></div>
+      <div class="field"><label>Adresse</label><input id="s_adr" value="Renens, Vaud — Suisse" oninput="render()"></div>
       <div class="row2">
-        <div class="field"><label>Numéro</label><input id="d_num" value="DEV-001" oninput="update()"></div>
-        <div class="field"><label>Validité (jours)</label><input id="d_validite" type="number" value="30" min="1" oninput="onValiditeChange()"></div>
+        <div class="field"><label>Email</label><input id="s_email" value="info@novodesign.ch" oninput="render()"></div>
+        <div class="field"><label>Téléphone</label><input id="s_tel" value="076 586 25 38" oninput="render()"></div>
+      </div>
+      <div class="field"><label>Site web</label><input id="s_web" value="novodesign.ch" oninput="render()"></div>
+
+      <div class="sec">Devis</div>
+      <div class="row2">
+        <div class="field"><label>Numéro</label><input id="d_num" value="DEV-001" oninput="render()"></div>
+        <div class="field"><label>Validité (jours)</label><input id="d_val" type="number" value="30" min="1" oninput="calcDateFin();render()"></div>
       </div>
       <div class="row2">
-        <div class="field"><label>Date d'émission</label><input id="d_date" type="date" oninput="onDateChange()"></div>
-        <div class="field"><label>Valable jusqu'au</label><input id="d_date_fin" type="date" oninput="update()"></div>
+        <div class="field"><label>Date d'émission</label><input id="d_date" type="date" oninput="calcDateFin();render()"></div>
+        <div class="field"><label>Valable jusqu'au</label><input id="d_fin" type="date" oninput="render()"></div>
       </div>
 
-      <div class="section-label">Client</div>
-      <div class="field"><label>Nom / Société</label><input id="c_nom" placeholder="Nom du client" oninput="update()"></div>
-      <div class="field"><label>Adresse</label><input id="c_adresse" placeholder="Rue, NPA Ville" oninput="update()"></div>
-      <div class="field"><label>Email</label><input id="c_email" placeholder="client@email.com" oninput="update()"></div>
-      <div class="field"><label>Téléphone</label><input id="c_tel" placeholder="0XX XXX XX XX" oninput="update()"></div>
+      <div class="sec">Client</div>
+      <div class="field"><label>Nom / Société</label><input id="c_nom" placeholder="Nom du client" oninput="render()"></div>
+      <div class="field"><label>Adresse</label><input id="c_adr" placeholder="Rue, NPA Ville" oninput="render()"></div>
+      <div class="row2">
+        <div class="field"><label>Email</label><input id="c_email" placeholder="client@email.ch" oninput="render()"></div>
+        <div class="field"><label>Téléphone</label><input id="c_tel" placeholder="0XX XXX XX XX" oninput="render()"></div>
+      </div>
 
-      <div class="section-label">Projet</div>
+      <div class="sec">Projet</div>
       <div class="field"><label>Type de site</label>
-        <select id="p_type" onchange="update()">
+        <select id="p_type" onchange="onTypeChange()">
           <option>Landing Page</option>
           <option>Site OnePage</option>
           <option>Site Vitrine</option>
           <option>Autre</option>
         </select>
       </div>
-      <div class="field"><label>Délai estimé</label><input id="p_delai" value="2–4 semaines après réception de l'acompte" oninput="update()"></div>
-      <div class="field"><label>Description (optionnel)</label><textarea id="p_desc" placeholder="Brève description du projet…" oninput="update()"></textarea></div>
+      <div class="field"><label>Délai estimé</label><input id="p_delai" value="1–2 semaines après réception de l'acompte" oninput="render()"></div>
+      <div class="field"><label>Description (optionnel)</label><textarea id="p_desc" placeholder="Brève description…" oninput="render()"></textarea></div>
 
-      <div class="section-label">TVA</div>
+      <div class="sec">TVA</div>
       <div class="tva-toggle" onclick="toggleTVA()">
         <span>Assujetti à la TVA</span>
-        <div class="toggle-pill" id="tva_pill"></div>
+        <div class="pill" id="tva_pill"></div>
       </div>
       <div class="tva-rates" id="tva_rates">
-        <div class="tva-btn active" onclick="setTVA(8.1,this)">8.1%</div>
-        <div class="tva-btn" onclick="setTVA(3.8,this)">3.8%</div>
-        <div class="tva-btn" onclick="setTVA(2.6,this)">2.6%</div>
+        <button class="tva-btn on" onclick="setTVA(8.1,this)">8.1%</button>
+        <button class="tva-btn" onclick="setTVA(3.8,this)">3.8%</button>
+        <button class="tva-btn" onclick="setTVA(2.6,this)">2.6%</button>
       </div>
 
-      <div class="section-label">Prestations</div>
+      <div class="sec">Prestations</div>
       <div id="prest_list"></div>
       <button class="btn-add" onclick="addPrest()">+ Ajouter une prestation</button>
 
-      <div class="section-label">Paiement</div>
+      <div class="sec">Paiement</div>
       <div class="field"><label>Acompte</label>
-        <select id="acompte_pct" onchange="update()">
+        <select id="acompte" onchange="render()">
           <option value="50">50% à la signature</option>
           <option value="30">30% à la signature</option>
           <option value="100">100% à la signature</option>
@@ -351,287 +247,220 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
         </select>
       </div>
 
-      <div class="section-label">Conditions</div>
+      <div class="sec">Conditions</div>
       <div id="cond_list"></div>
       <button class="btn-add" onclick="addCond()">+ Ajouter une condition</button>
     </div>
 
-    <div class="sidebar-actions">
+    <div class="actions">
       <button class="btn-print" onclick="window.print()">🖨️ Imprimer / Exporter PDF</button>
-      <button class="btn-reset" onclick="resetForm()">↺ Réinitialiser le formulaire</button>
+      <button class="btn-reset" onclick="resetAll()">↺ Réinitialiser</button>
     </div>
   </aside>
 
-  <!-- ═══ PREVIEW ═══ -->
-  <div class="preview-wrap hidden" id="tab-preview">
-    <div class="preview-label">Aperçu — A4</div>
-    <div class="a4" id="preview"></div>
+  <!-- PREVIEW -->
+  <div class="preview hide" id="panel-preview">
+    <div class="preview-lbl">Aperçu A4</div>
+    <div class="a4" id="a4"></div>
   </div>
 </div>
 
 <script>
-let tvaActive = false, tvaRate = 8.1;
-let prests = [], conds = [], prestId = 0, condId = 0;
+var tvaOn=false, tvaRate=8.1, prests=[], conds=[], pid=0, cid=0;
 
-// ── TABS (mobile) ──
-function showTab(tab) {
-  const isForm = tab === 'form';
-  document.getElementById('tab-form').classList.toggle('hidden', !isForm);
-  document.getElementById('tab-preview').classList.toggle('hidden', isForm);
-  document.querySelectorAll('.mobile-tabs button').forEach((b,i) => b.classList.toggle('active', isForm ? i===0 : i===1));
-  if (!isForm) update();
-}
+var DELAIS={
+  'Landing Page':'1–2 semaines après réception de l\'acompte',
+  'Site OnePage':'2–4 semaines après réception de l\'acompte',
+  'Site Vitrine':'4–6 semaines après réception de l\'acompte',
+  'Autre':'À définir avec le client'
+};
 
-// ── DATES ──
-function isoToday() { return new Date().toISOString().split('T')[0]; }
-function addDays(dateStr, n) {
-  const d = new Date(dateStr + 'T00:00:00');
-  d.setDate(d.getDate() + n);
-  return d.toISOString().split('T')[0];
-}
-function fmtDate(str) {
-  if (!str) return '—';
-  const d = new Date(str + 'T00:00:00');
-  return d.toLocaleDateString('fr-CH', { day:'2-digit', month:'2-digit', year:'numeric' });
-}
-function onDateChange() {
-  const base = document.getElementById('d_date').value;
-  const days = parseInt(document.getElementById('d_validite').value) || 30;
-  if (base) document.getElementById('d_date_fin').value = addDays(base, days);
-  update();
-}
-function onValiditeChange() {
-  const base = document.getElementById('d_date').value;
-  const days = parseInt(document.getElementById('d_validite').value) || 30;
-  if (base) document.getElementById('d_date_fin').value = addDays(base, days);
-  update();
-}
-function initDates() {
-  const t = isoToday();
-  document.getElementById('d_date').value = t;
-  document.getElementById('d_date_fin').value = addDays(t, 30);
+function showTab(t){
+  var isForm=t==='form';
+  document.getElementById('panel-form').className='sidebar'+(isForm?'':' hide');
+  document.getElementById('panel-preview').className='preview'+(isForm?' hide':'');
+  var btns=document.querySelectorAll('.tabs button');
+  btns[0].className=isForm?'active':'';
+  btns[1].className=isForm?'':'active';
+  if(!isForm) render();
 }
 
-// ── TVA ──
-function toggleTVA() {
-  tvaActive = !tvaActive;
-  document.getElementById('tva_pill').className = 'toggle-pill' + (tvaActive ? ' on' : '');
-  document.getElementById('tva_rates').className = 'tva-rates' + (tvaActive ? ' visible' : '');
-  update();
-}
-function setTVA(rate, el) {
-  tvaRate = rate;
-  document.querySelectorAll('.tva-btn').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
-  update();
+function v(id){var el=document.getElementById(id);return el?el.value:'';}
+
+function isoToday(){return new Date().toISOString().split('T')[0];}
+function addDays(s,n){var d=new Date(s+'T00:00:00');d.setDate(d.getDate()+n);return d.toISOString().split('T')[0];}
+function fmtDate(s){if(!s)return'—';var d=new Date(s+'T00:00:00');return d.toLocaleDateString('fr-CH',{day:'2-digit',month:'2-digit',year:'numeric'});}
+function fmtCHF(n){if(!n||isNaN(n)||n===0)return'—';return n.toLocaleString('fr-CH',{minimumFractionDigits:2,maximumFractionDigits:2}).replace(/\u202f|\s/g,"'")+' CHF';}
+function parseP(s){var v=parseFloat((s||'').replace(/[^0-9.,]/g,'').replace(',','.'));return isNaN(v)?0:v;}
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function calcDateFin(){
+  var base=v('d_date'), n=parseInt(v('d_val'))||30;
+  if(base){document.getElementById('d_fin').value=addDays(base,n);}
 }
 
-// ── PRESTATIONS ──
-function addPrest(desc='', detail='Forfait', prix='') {
-  const id = ++prestId;
-  prests.push({ id, desc, detail, prix });
-  renderPrests();
-  update();
-}
-function removePrest(id) {
-  prests = prests.filter(p => p.id !== id);
-  renderPrests();
-  update();
-}
-function renderPrests() {
-  document.getElementById('prest_list').innerHTML = prests.map((p, i) => `
-    <div class="prest-item">
-      <div class="prest-header">
-        <span class="prest-num">Prestation ${i+1}</span>
-        <button class="btn-remove" onclick="removePrest(${p.id})">×</button>
-      </div>
-      <input class="prest-input" placeholder="Description" value="${esc(p.desc)}" oninput="setPrest(${p.id},'desc',this.value)">
-      <div class="prest-row">
-        <select class="prest-select" onchange="setPrest(${p.id},'detail',this.value)">
-          ${['Forfait','Inclus','Offert','Sur devis'].map(o=>`<option ${p.detail===o?'selected':''}>${o}</option>`).join('')}
-        </select>
-        <input class="prest-input" placeholder="Prix CHF" value="${esc(p.prix)}" oninput="setPrest(${p.id},'prix',this.value)" style="margin-bottom:0">
-      </div>
-    </div>`).join('');
-}
-function setPrest(id, key, val) {
-  const p = prests.find(x => x.id === id);
-  if (p) { p[key] = val; update(); }
+function onTypeChange(){
+  var t=v('p_type');
+  document.getElementById('p_delai').value=DELAIS[t]||'À définir';
+  if(prests.length>0) prests[0].desc='Création site web — '+t;
+  renderPrestList();
+  render();
 }
 
-// ── CONDITIONS ──
-function addCond(text='') {
-  const id = ++condId;
-  conds.push({ id, text });
-  renderConds();
-  update();
+function toggleTVA(){
+  tvaOn=!tvaOn;
+  document.getElementById('tva_pill').className='pill'+(tvaOn?' on':'');
+  document.getElementById('tva_rates').className='tva-rates'+(tvaOn?' show':'');
+  render();
 }
-function removeCond(id) {
-  conds = conds.filter(c => c.id !== id);
-  renderConds();
-  update();
-}
-function renderConds() {
-  document.getElementById('cond_list').innerHTML = conds.map(c => `
-    <div class="cond-item">
-      <textarea class="cond-ta" oninput="setCond(${c.id},this.value)">${esc(c.text)}</textarea>
-      <button class="btn-remove" onclick="removeCond(${c.id})">×</button>
-    </div>`).join('');
-}
-function setCond(id, val) {
-  const c = conds.find(x => x.id === id);
-  if (c) { c.text = val; update(); }
+function setTVA(r,el){
+  tvaRate=r;
+  document.querySelectorAll('.tva-btn').forEach(function(b){b.className='tva-btn';});
+  el.className='tva-btn on';
+  render();
 }
 
-// ── UTILS ──
-function g(id) { return document.getElementById(id)?.value || ''; }
-function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function fmtCHF(n) {
-  if (!n || isNaN(n)) return '—';
-  return n.toLocaleString('fr-CH',{minimumFractionDigits:2,maximumFractionDigits:2}).replace(/\u202f|\s/g,''')+" CHF";
+function addPrest(desc,detail,prix){
+  prests.push({id:++pid,desc:desc||'',detail:detail||'Forfait',prix:prix||''});
+  renderPrestList();render();
 }
-function parsePrice(s) {
-  const v = parseFloat((s||'').replace(/[^0-9.,]/g,'').replace(',','.'));
-  return isNaN(v) ? 0 : v;
+function removePrest(id){prests=prests.filter(function(p){return p.id!==id;});renderPrestList();render();}
+function setPrestDesc(id,v){var p=prests.find(function(x){return x.id===id;});if(p){p.desc=v;render();}}
+function setPrestDetail(id,v){var p=prests.find(function(x){return x.id===id;});if(p){p.detail=v;render();}}
+function setPrestPrix(id,v){var p=prests.find(function(x){return x.id===id;});if(p){p.prix=v;render();}}
+
+function renderPrestList(){
+  var html='';
+  prests.forEach(function(p,i){
+    html+='<div class="prest">'+
+      '<div class="prest-hd"><span class="prest-num">Prestation '+(i+1)+'</span>'+
+      '<button class="btn-x" onclick="removePrest('+p.id+')">×</button></div>'+
+      '<input placeholder="Description" value="'+esc(p.desc)+'" oninput="setPrestDesc('+p.id+',this.value)">'+
+      '<div class="prest-row">'+
+      '<select onchange="setPrestDetail('+p.id+',this.value)">'+
+      ['Forfait','Inclus','Offert','Sur devis'].map(function(o){return'<option'+(p.detail===o?' selected':'')+'>'+o+'</option>';}).join('')+
+      '</select>'+
+      '<input placeholder="Prix CHF" value="'+esc(p.prix)+'" oninput="setPrestPrix('+p.id+',this.value)">'+
+      '</div></div>';
+  });
+  document.getElementById('prest_list').innerHTML=html;
 }
 
-// ── RENDER ──
-function update() {
-  const sNom = g('s_nom')||'NOVO.';
-  const sAdr = g('s_adresse'); const sEmail = g('s_email');
-  const sTel = g('s_tel'); const sWeb = g('s_web');
-  const dNum = g('d_num')||'DEV-001';
-  const dDate = fmtDate(g('d_date')); const dFin = fmtDate(g('d_date_fin'));
-  const cNom = g('c_nom')||'[NOM DU CLIENT]';
-  const cAdr = g('c_adresse')||'—'; const cEmail = g('c_email')||'—'; const cTel = g('c_tel')||'—';
-  const pType = g('p_type'); const pDelai = g('p_delai'); const pDesc = g('p_desc');
-  const acomptePct = parseInt(g('acompte_pct'));
+function addCond(text){
+  conds.push({id:++cid,text:text||''});
+  renderCondList();render();
+}
+function removeCond(id){conds=conds.filter(function(c){return c.id!==id;});renderCondList();render();}
+function setCondText(id,v){var c=conds.find(function(x){return x.id===id;});if(c){c.text=v;render();}}
+function renderCondList(){
+  var html='';
+  conds.forEach(function(c){
+    html+='<div class="cond">'+
+      '<textarea oninput="setCondText('+c.id+',this.value)">'+esc(c.text)+'</textarea>'+
+      '<button class="btn-x" onclick="removeCond('+c.id+')">×</button></div>';
+  });
+  document.getElementById('cond_list').innerHTML=html;
+}
 
-  // Calculs
-  const ht = prests.reduce((s,p) => s + parsePrice(p.prix), 0);
-  const tvaAmt = tvaActive ? ht * tvaRate / 100 : 0;
-  const ttc = ht + tvaAmt;
-  const acompteAmt = acomptePct > 0 ? ttc * acomptePct / 100 : 0;
-  const soldeAmt = ttc - acompteAmt;
+function render(){
+  var sNom=v('s_nom')||'NOVO.', sAdr=v('s_adr'), sEmail=v('s_email'), sTel=v('s_tel'), sWeb=v('s_web');
+  var dNum=v('d_num')||'DEV-001', dDate=fmtDate(v('d_date')), dFin=fmtDate(v('d_fin'));
+  var cNom=v('c_nom')||'[NOM DU CLIENT]', cAdr=v('c_adr')||'—', cEmail=v('c_email')||'—', cTel=v('c_tel')||'—';
+  var pType=v('p_type'), pDelai=v('p_delai'), pDesc=v('p_desc');
+  var ac=parseInt(v('acompte'))||0;
 
-  // Lignes prestations
-  const rows = prests.length ? prests.map(p => {
-    const prix = parsePrice(p.prix);
-    const pFmt = prix > 0 ? fmtCHF(prix) : '—';
-    return `<tr><td>${esc(p.desc)||'—'}</td><td>${p.detail}</td><td>${pFmt}</td></tr>`;
-  }).join('') : `<tr><td colspan="3" style="text-align:center;color:#ccc;padding:14px;font-style:italic">Aucune prestation — ajoutez-en dans le formulaire</td></tr>`;
+  var ht=prests.reduce(function(s,p){return s+parseP(p.prix);},0);
+  var tvaAmt=tvaOn?ht*tvaRate/100:0;
+  var ttc=ht+tvaAmt;
+  var acAmt=ac>0?ttc*ac/100:0;
+  var solAmt=ttc-acAmt;
 
-  // Tfoot
-  let tfoot = '';
-  if (tvaActive) {
-    tfoot += `<tr class="row-sub"><td colspan="2">Sous-total HT</td><td>${fmtCHF(ht)}</td></tr>`;
-    tfoot += `<tr class="row-tva"><td colspan="2">TVA ${tvaRate}%</td><td>${fmtCHF(tvaAmt)}</td></tr>`;
+  var rows=prests.length?prests.map(function(p){
+    var prix=parseP(p.prix);
+    return '<tr><td>'+esc(p.desc||'—')+'</td><td>'+p.detail+'</td><td>'+(prix>0?fmtCHF(prix):'—')+'</td></tr>';
+  }).join(''):'<tr><td colspan="3" style="text-align:center;color:#ccc;padding:12px;font-style:italic">Ajoutez des prestations dans le formulaire</td></tr>';
+
+  var tfoot='';
+  if(tvaOn){
+    tfoot+='<tr class="r-sub"><td colspan="2">Sous-total HT</td><td>'+fmtCHF(ht)+'</td></tr>';
+    tfoot+='<tr class="r-tva"><td colspan="2">TVA '+tvaRate+'%</td><td>'+fmtCHF(tvaAmt)+'</td></tr>';
   }
-  tfoot += `<tr class="row-total"><td colspan="2">TOTAL ${tvaActive?'TTC':''}</td><td>${fmtCHF(ttc)}</td></tr>`;
-  if (acomptePct > 0 && acomptePct < 100) {
-    tfoot += `<tr class="row-acompte"><td colspan="2">Acompte à la signature (${acomptePct}%)</td><td>${fmtCHF(acompteAmt)}</td></tr>`;
-    tfoot += `<tr class="row-solde"><td colspan="2">Solde à la livraison (${100-acomptePct}%)</td><td>${fmtCHF(soldeAmt)}</td></tr>`;
+  tfoot+='<tr class="r-tot"><td colspan="2">TOTAL'+(tvaOn?' TTC':'')+'</td><td>'+fmtCHF(ttc)+'</td></tr>';
+  if(ac>0&&ac<100){
+    tfoot+='<tr class="r-ac"><td colspan="2">Acompte à la signature ('+ac+'%)</td><td>'+fmtCHF(acAmt)+'</td></tr>';
+    tfoot+='<tr class="r-sol"><td colspan="2">Solde à la livraison ('+(100-ac)+'%)</td><td>'+fmtCHF(solAmt)+'</td></tr>';
   }
 
-  // Conditions
-  const condHTML = conds.length ? `<div class="a4-conds">
-    <div class="a4-stitle" style="margin-top:12px">Conditions</div>
-    ${conds.map((c,i) => `<div class="a4-cond"><span class="a4-cnum">${i+1}.</span><span class="a4-ctxt">${esc(c.text)}</span></div>`).join('')}
-  </div>` : '';
+  var condHTML=conds.length?'<div class="a4-conds"><div class="a4-stitle" style="margin-top:11px">Conditions</div>'+
+    conds.map(function(c,i){return'<div class="a4-cond"><span class="a4-cnum">'+(i+1)+'.</span><span class="a4-ctxt">'+esc(c.text)+'</span></div>';}).join('')+'</div>':'';
 
-  // Description
-  const descRow = pDesc ? `<div class="a4-pitem" style="grid-column:1/-1"><label>Description</label><span>${esc(pDesc)}</span></div>` : '';
+  var descRow=pDesc?'<div style="grid-column:1/-1"><label>Description</label><span>'+esc(pDesc)+'</span></div>':'';
 
-  document.getElementById('preview').innerHTML = `
-    <div class="a4-header">
-      <div class="a4-logobox"><span class="a4-logotext">${esc(sNom)}</span></div>
-      <div class="a4-hinfo">
-        <div class="a4-hname">${esc(sNom)}</div>
-        <div class="a4-hsub">${esc(sAdr)}<br>${esc(sEmail)} · ${esc(sTel)}<br>${esc(sWeb)}</div>
-      </div>
-    </div>
-    <div class="a4-sep"></div>
-
-    <div class="a4-title-row">
-      <div>
-        <div class="a4-title">DEVIS</div>
-        <div class="a4-num">N° ${esc(dNum)}</div>
-      </div>
-      <div class="a4-meta">
-        <div class="a4-meta-line"><strong>Émis le :</strong> ${dDate}</div>
-        <div class="a4-meta-line"><strong>Valable jusqu'au :</strong> ${dFin}</div>
-        <span class="a4-badge">${tvaActive ? `TVA ${tvaRate}% incluse` : 'TVA non applicable'}</span>
-      </div>
-    </div>
-
-    <div class="a4-parties">
-      <div>
-        <div class="a4-plabel">Prestataire</div>
-        <div class="a4-pname">${esc(sNom)}</div>
-        <div class="a4-pinfo">${esc(sAdr)}<br>${esc(sEmail)}<br>${esc(sTel)}<br>${esc(sWeb)}</div>
-      </div>
-      <div>
-        <div class="a4-plabel">Client</div>
-        <div class="a4-pname">${esc(cNom)}</div>
-        <div class="a4-pinfo">${esc(cAdr)}<br>${esc(cEmail)}<br>${esc(cTel)}</div>
-      </div>
-    </div>
-
-    <div class="a4-projet">
-      <div class="a4-pitem"><label>Type de site</label><span>${esc(pType)}</span></div>
-      <div class="a4-pitem"><label>Délai estimé</label><span>${esc(pDelai)}</span></div>
-      ${descRow}
-    </div>
-
-    <div class="a4-stitle">Prestations & Tarifs</div>
-    <table class="a4-table">
-      <thead><tr><th>Prestation</th><th>Détail</th><th>Montant (CHF)</th></tr></thead>
-      <tbody>${rows}</tbody>
-      <tfoot>${tfoot}</tfoot>
-    </table>
-
-    ${condHTML}
-
-    <div class="a4-sigs">
-      <div>
-        <div class="a4-sig-title">Pour le client</div>
-        <div class="a4-sig-line"></div><div class="a4-sig-lbl">Nom</div>
-        <div class="a4-sig-line" style="margin-top:10px"></div><div class="a4-sig-lbl">Date</div>
-        <div class="a4-sig-line" style="margin-top:10px"></div><div class="a4-sig-lbl">Signature</div>
-      </div>
-      <div>
-        <div class="a4-sig-title">Pour ${esc(sNom)}</div>
-        <div class="a4-sig-line"></div><div class="a4-sig-lbl">Nom</div>
-        <div class="a4-sig-line" style="margin-top:10px"></div><div class="a4-sig-lbl">Date</div>
-        <div class="a4-sig-line" style="margin-top:10px"></div><div class="a4-sig-lbl">Signature</div>
-      </div>
-    </div>
-
-    <div class="a4-footer">${esc(sNom)} · ${esc(sAdr)} · ${esc(sEmail)} · ${esc(sTel)} · ${esc(sWeb)}</div>
-  `;
+  document.getElementById('a4').innerHTML=
+    '<div class="a4-hdr">'+
+      '<div class="a4-logo"><span>'+esc(sNom)+'</span></div>'+
+      '<div class="a4-hinfo"><div class="a4-hname">'+esc(sNom)+'</div>'+
+      '<div class="a4-hsub">'+esc(sAdr)+'<br>'+esc(sEmail)+' · '+esc(sTel)+'<br>'+esc(sWeb)+'</div></div>'+
+    '</div>'+
+    '<div class="a4-sep"></div>'+
+    '<div class="a4-title-row">'+
+      '<div><div class="a4-title">DEVIS</div><div class="a4-num">N° '+esc(dNum)+'</div></div>'+
+      '<div class="a4-meta">'+
+        '<div><strong>Émis le :</strong> '+dDate+'</div>'+
+        '<div><strong>Valable jusqu\'au :</strong> '+dFin+'</div>'+
+        '<span class="a4-badge">'+(tvaOn?'TVA '+tvaRate+'% incluse':'TVA non applicable')+'</span>'+
+      '</div>'+
+    '</div>'+
+    '<div class="a4-parties">'+
+      '<div><div class="a4-plbl">Prestataire</div><div class="a4-pname">'+esc(sNom)+'</div>'+
+      '<div class="a4-pinfo">'+esc(sAdr)+'<br>'+esc(sEmail)+'<br>'+esc(sTel)+'<br>'+esc(sWeb)+'</div></div>'+
+      '<div><div class="a4-plbl">Client</div><div class="a4-pname">'+esc(cNom)+'</div>'+
+      '<div class="a4-pinfo">'+esc(cAdr)+'<br>'+esc(cEmail)+'<br>'+esc(cTel)+'</div></div>'+
+    '</div>'+
+    '<div class="a4-proj">'+
+      '<div><label>Type de site</label><span>'+esc(pType)+'</span></div>'+
+      '<div><label>Délai estimé</label><span>'+esc(pDelai)+'</span></div>'+
+      descRow+
+    '</div>'+
+    '<div class="a4-stitle">Prestations & Tarifs</div>'+
+    '<table class="a4-table"><thead><tr><th>Prestation</th><th>Détail</th><th>Montant (CHF)</th></tr></thead>'+
+    '<tbody>'+rows+'</tbody><tfoot>'+tfoot+'</tfoot></table>'+
+    condHTML+
+    '<div class="a4-sigs">'+
+      '<div><div class="a4-stitle2">Pour le client</div>'+
+        '<div class="a4-sline"></div><div class="a4-slbl">Nom</div>'+
+        '<div class="a4-sline" style="margin-top:9px"></div><div class="a4-slbl">Date</div>'+
+        '<div class="a4-sline" style="margin-top:9px"></div><div class="a4-slbl">Signature</div></div>'+
+      '<div><div class="a4-stitle2">Pour '+esc(sNom)+'</div>'+
+        '<div class="a4-sline"></div><div class="a4-slbl">Nom</div>'+
+        '<div class="a4-sline" style="margin-top:9px"></div><div class="a4-slbl">Date</div>'+
+        '<div class="a4-sline" style="margin-top:9px"></div><div class="a4-slbl">Signature</div></div>'+
+    '</div>'+
+    '<div class="a4-footer">'+esc(sNom)+' · '+esc(sAdr)+' · '+esc(sEmail)+' · '+esc(sTel)+' · '+esc(sWeb)+'</div>';
 }
 
-// ── RESET ──
-function resetForm() {
-  if (!confirm('Réinitialiser tout le formulaire ?')) return;
-  prests = []; conds = []; prestId = 0; condId = 0;
-  tvaActive = false; tvaRate = 8.1;
-  document.getElementById('tva_pill').className = 'toggle-pill';
-  document.getElementById('tva_rates').className = 'tva-rates';
-  document.querySelectorAll('.tva-btn').forEach((b,i) => b.classList.toggle('active', i===0));
-  ['c_nom','c_adresse','c_email','c_tel','p_desc'].forEach(id => document.getElementById(id).value='');
-  document.getElementById('d_num').value = 'DEV-001';
-  document.getElementById('d_validite').value = '30';
-  document.getElementById('acompte_pct').value = '50';
-  renderPrests(); renderConds();
-  initDates();
-  initDefaults();
-  update();
+function resetAll(){
+  if(!confirm('Réinitialiser tout le formulaire ?')) return;
+  prests=[];conds=[];pid=0;cid=0;
+  tvaOn=false;tvaRate=8.1;
+  document.getElementById('tva_pill').className='pill';
+  document.getElementById('tva_rates').className='tva-rates';
+  document.querySelectorAll('.tva-btn').forEach(function(b,i){b.className='tva-btn'+(i===0?' on':'');});
+  ['c_nom','c_adr','c_email','c_tel','p_desc'].forEach(function(id){document.getElementById(id).value='';});
+  document.getElementById('d_num').value='DEV-001';
+  document.getElementById('d_val').value='30';
+  document.getElementById('acompte').value='50';
+  document.getElementById('p_type').value='Landing Page';
+  document.getElementById('p_delai').value=DELAIS['Landing Page'];
+  renderPrestList();renderCondList();
+  init();
 }
 
-// ── INIT ──
-function initDefaults() {
-  addPrest('Création site web — [TYPE DE SITE]','Forfait','');
+function init(){
+  var t=isoToday();
+  document.getElementById('d_date').value=t;
+  document.getElementById('d_fin').value=addDays(t,30);
+  addPrest('Création site web — Landing Page','Forfait','');
   addPrest('Rédaction des textes','Inclus','');
   addPrest('SEO de base (référencement naturel)','Inclus','');
   addPrest('Design sur-mesure & responsive mobile','Inclus','');
@@ -643,11 +472,10 @@ function initDefaults() {
   addCond("Jusqu'à 2 rounds de corrections inclus. Toute modification supplémentaire est facturée séparément.");
   addCond("Domaine + hébergement offerts la 1ère année. Renouvellement à la charge du client dès la 2ème année.");
   addCond("Devis valable 30 jours à compter de la date d'émission.");
+  render();
 }
 
-initDates();
-initDefaults();
-update();
+init();
 </script>
 </body>
 </html>
